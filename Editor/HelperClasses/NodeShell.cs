@@ -163,7 +163,7 @@ public class NodeShell
                 }
                 if(e.button == 1)
                 {
-                    if(Rect.Contains(e.mousePosition))
+                    if(Rect.Contains(e.mousePosition) && OnRemoveNode != null)
                     {
                         GenericMenu menu = new GenericMenu();
                         menu.AddItem(new GUIContent("Remove", "Removes Node from rule"), false, () => OnRemoveNode(this));
@@ -187,17 +187,6 @@ public class NodeShell
         }
 
         return false;
-    }
-
-    /// <summary>
-    /// Processes Unity events for connected <see cref="Port"/>.
-    /// </summary>
-    /// <param name="e"></param>
-    public void ProcessPortEvents(Event e)
-    {
-        if (Port0 != null) Port0.ProcessEvents(e);
-        if (Port1 != null) Port1.ProcessEvents(e);
-        if (Port2 != null) Port2.ProcessEvents(e);
     }
 }
 

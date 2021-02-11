@@ -16,7 +16,7 @@ public static class RuleCreator
     /// <param name="QualityID">Representing Wuality decision identifier. </param>
     /// <param name="skin"><see cref="GUISkin"/> of nodes. </param>
     /// <returns></returns>
-    public static RootShell CreateRoot(Vector2 position, Action<Port> OnPortClick, Action<int,int,Vector2> OnRootUpdate ,int mandatoryID, int QualityID, GUISkin skin)
+    public static RootShell CreateRoot(Vector2 position, Action<Port> OnPortClick, Action<int,int,Vector2> OnRootUpdate ,Action<Thread> OnRemoveThread ,int mandatoryID, int QualityID, GUISkin skin)
     {
         RootNodeStyle style = new RootNodeStyle("Root");
         RootShell root = new RootShell
@@ -37,6 +37,7 @@ public static class RuleCreator
             MyNode = root,
             nodeSkin = skin,
             OnClickPort = OnPortClick,
+            OnRemoveThread = OnRemoveThread,
             rect = new Rect(0, 0, skin.button.fixedWidth, skin.button.fixedHeight),
             isDecision = true
         };
@@ -47,6 +48,7 @@ public static class RuleCreator
             MyNode = root,
             nodeSkin = skin,
             OnClickPort = OnPortClick,
+            OnRemoveThread = OnRemoveThread,
             rect = new Rect(0, 0, skin.button.fixedWidth, skin.button.fixedHeight),
             isDecision = true
         };
@@ -57,6 +59,7 @@ public static class RuleCreator
             MyNode = root,
             nodeSkin = skin,
             OnClickPort = OnPortClick,
+            OnRemoveThread = OnRemoveThread,
             rect = new Rect(0, 0, skin.button.fixedWidth, skin.button.fixedHeight),
             isDecision = false
         };
@@ -73,7 +76,7 @@ public static class RuleCreator
     /// <param name="action">Action asset represented by this node. </param>
     /// <param name="skin"><see cref="GUISkin"/> of nodes. </param>
     /// <returns></returns>
-    public static ActionShell CreateActionNode(Vector2 position, Action<Port> OnPortClick, Action<Action, Vector2> OnActionUpdate, Action<NodeShell> OnRemoveNode, Action action ,GUISkin skin)
+    public static ActionShell CreateActionNode(Vector2 position, Action<Port> OnPortClick, Action<Action, Vector2> OnActionUpdate, Action<NodeShell> OnRemoveNode,Action<Thread> OnRemoveThread, Action action ,GUISkin skin)
     {
         ActionStyle style = new ActionStyle(action.Name);
         ActionShell crAct = new ActionShell
@@ -94,6 +97,7 @@ public static class RuleCreator
             MyNode = crAct,
             nodeSkin = skin,
             OnClickPort = OnPortClick,
+            OnRemoveThread = OnRemoveThread,
             rect = new Rect(0, 0, skin.button.fixedWidth, skin.button.fixedHeight),
             isDecision = false
         };
@@ -109,7 +113,7 @@ public static class RuleCreator
     /// <param name="OnRemoveNode">Event-handle for removing this node. </param>>
     /// <param name="skin"><see cref="GUISkin"/> of nodes. </param>
     /// <returns></returns>
-    public static NodeShell CreateNewDecisionNode(int id, Statement statement, Action<int, Statement, int[], NodeShell.Data, Vector2> OnRuleUpdate, Action<Port> OnPortClick, Action<NodeShell> OnRemoveNode, GUISkin skin)
+    public static NodeShell CreateNewDecisionNode(int id, Statement statement, Action<int, Statement, int[], NodeShell.Data, Vector2> OnRuleUpdate, Action<Port> OnPortClick, Action<NodeShell> OnRemoveNode, Action<Thread> OnRemoveThread, GUISkin skin)
     {
         NodeShell crNode = new NodeShell
         {
@@ -138,6 +142,7 @@ public static class RuleCreator
                     MyNode = crNode,
                     nodeSkin = skin,
                     OnClickPort = OnPortClick,
+                    OnRemoveThread = OnRemoveThread,
                     rect = new Rect(0, 0, skin.button.fixedWidth, skin.button.fixedHeight),
                     isDecision = true
                 };
@@ -161,6 +166,7 @@ public static class RuleCreator
                     MyNode = crNode,
                     nodeSkin = skin,
                     OnClickPort = OnPortClick,
+                    OnRemoveThread = OnRemoveThread,
                     rect = new Rect(0, 0, skin.button.fixedWidth, skin.button.fixedHeight)
                 };
                 break;
@@ -179,6 +185,7 @@ public static class RuleCreator
             nodeSkin = skin,
             Color = crNode.Style.Color,
             OnClickPort = OnPortClick,
+            OnRemoveThread = OnRemoveThread,
             rect = new Rect(0, 0, skin.button.fixedWidth, skin.button.fixedHeight),
             isDecision = true
         };

@@ -19,7 +19,7 @@ public class Port
     public Action<Port> OnClickPort;
     public Action<Thread> OnRemoveThread;
     public GUISkin nodeSkin;
-    const string ThreadFormat = "From: {0} To: {1}";
+    const string ThreadFormat = "Remove thread: {0} > {1}";
 
     public void Draw()
     {
@@ -30,36 +30,24 @@ public class Port
 
         if (GUI.Button(rect,"", nodeSkin.button))
         {
-            if (OnClickPort != null)
-            {
+            if(Event.current.button == 0 && OnClickPort != null)
+            { 
                 OnClickPort(this);
+            }
+            else if(Event.current.button == 1 && Connections.Count > 0)
+            {
+                GenericMenu menu = new GenericMenu();
+                foreach (Thread thread in Connections)
+                {
+                    menu.AddItem(new GUIContent(string.Format(ThreadFormat, Name, thread.outputPort.Name), "Removes thread from port"), false, () => OnRemoveThread(thread));
+                }
+
+                menu.ShowAsContext();
             }
         }
         GUI.backgroundColor = prev;
     }
 
-
-    public void ProcessEvents(Event e)
-    {
-        switch(e.type)
-        {
-            case EventType.MouseDown:
-                if(e.button == 1)
-                {
-                    if(rect.Contains(e.mousePosition) && Connections.Count > 0)
-                    {
-                        GenericMenu menu = new GenericMenu();
-                        foreach (Thread thread in Connections)
-                        { 
-                            menu.AddItem(new GUIContent(string.Format(ThreadFormat, Name, thread.outputPort.Name), "Removes thread from port"), false, () => OnRemoveThread(thread));
-                        }
-                        
-                        menu.ShowAsContext();
-                    }
-                }
-                break;
-        }
-    }
 
     /// <summary>
     /// Collects <see cref="Decision"/> identifiers from connected <see cref="Thread"/>.

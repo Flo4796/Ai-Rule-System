@@ -3,10 +3,17 @@
 Adelic Systems(c) Asset-base AI Rule System and Rule System Editors.
 All notable system upgrates will be tracked here.
 
-##[Unreleased]
+##[0.9.1] - 2021-02-11
 
 ### Added
 - Dynamic node change by object picker.
+- Embedded Build-In Assets
+
+### Changed
+- Removed ablity to remove Root Node.
+
+### Fixed
+- Rule removal no longer leaves 'ghost threads'.
 
 ##[0.9.0] - 2021-02-11
 

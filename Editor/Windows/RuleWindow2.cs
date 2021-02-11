@@ -89,16 +89,16 @@ public class RuleWindow2 : EditorWindow
         int ruleIndex = int.Parse(SubjectRule.propertyPath.Substring(SubjectRule.propertyPath.IndexOf("[") + 1).Replace("]", ""));
 
         deserializedRule = RuleSystemUtil.DeserializeRule(SubjectRule,setName,ruleIndex);
-        rootNode = RuleCreator.CreateRoot(deserializedRule.RootGridPosition, OnNodePortContact, OnUpdateRootRequest,deserializedRule.MandatoryId, deserializedRule.QualityId, NodeSkin);
+        rootNode = RuleCreator.CreateRoot(deserializedRule.RootGridPosition, OnNodePortContact, OnUpdateRootRequest, OnRemoveAThread, deserializedRule.MandatoryId, deserializedRule.QualityId, NodeSkin);
         if (deserializedRule.MyAction != null)
         {
-            actionNode = RuleCreator.CreateActionNode(deserializedRule.ActionGridPosition, OnNodePortContact, OnUpdateActionRequest, OnRemoveNode, deserializedRule.MyAction, NodeSkin);
+            actionNode = RuleCreator.CreateActionNode(deserializedRule.ActionGridPosition, OnNodePortContact, OnUpdateActionRequest, OnRemoveNode, OnRemoveAThread, deserializedRule.MyAction, NodeSkin);
         }
         foreach (Decision decision in deserializedRule.MyDecisions)
         {
 
             ruleDecisions.Add(decision);
-            NodeShell rawNode = RuleCreator.CreateNewDecisionNode(decision.identifier, decision.Operator,OnUpdateRuleRequest, OnNodePortContact, OnRemoveNode ,NodeSkin);
+            NodeShell rawNode = RuleCreator.CreateNewDecisionNode(decision.identifier, decision.Operator,OnUpdateRuleRequest, OnNodePortContact, OnRemoveNode , OnRemoveAThread , NodeSkin);
             rawNode.Container = new NodeShell.Data
             {
                 FloatValue = decision.FlatValue
@@ -429,20 +429,6 @@ public class RuleWindow2 : EditorWindow
         }
     }
     /// <summary>
-    /// Iterates through <see cref="NodeShell"/> and executes ProcessPortEvent -function.
-    /// </summary>
-    /// <param name="e"></param>
-    private void ProcessThreadEvents(Event e)
-    {
-        rootNode.ProcessPortEvents(e);
-
-        foreach (NodeShell node in ruleNodes)
-        {
-            node.ProcessPortEvents(e);
-        }
-
-    }
-    /// <summary>
     /// Handles Object drag for Nodes.
     /// </summary>
     /// <param name="delta">Mouse delta compared to previous frame. </param>
@@ -474,7 +460,7 @@ public class RuleWindow2 : EditorWindow
         createdDecision = new Decision();
         createdDecision.identifier = GenerateDecisionId();
         createdDecision.Operator = statement;
-        createdNode = RuleCreator.CreateNewDecisionNode(createdDecision.identifier, statement, OnUpdateRuleRequest, OnNodePortContact, OnRemoveNode, NodeSkin);
+        createdNode = RuleCreator.CreateNewDecisionNode(createdDecision.identifier, statement, OnUpdateRuleRequest, OnNodePortContact, OnRemoveNode, OnRemoveAThread,NodeSkin);
         createdNode.Rect.position = mousePos;
         
     }
@@ -484,7 +470,7 @@ public class RuleWindow2 : EditorWindow
     /// <param name="action"><see cref="Action"/> that needs a node. </param>
     private void OnRequestActionNode(Action action)
     {
-        createdActionNode = RuleCreator.CreateActionNode(deserializedRule.ActionGridPosition, OnNodePortContact, OnUpdateActionRequest, OnRemoveNode, action, NodeSkin);
+        createdActionNode = RuleCreator.CreateActionNode(deserializedRule.ActionGridPosition, OnNodePortContact, OnUpdateActionRequest, OnRemoveNode, OnRemoveAThread, action, NodeSkin);
         createdActionNode.Rect.position = mousePos;
 
     }
@@ -592,6 +578,23 @@ public class RuleWindow2 : EditorWindow
         {
             var decision = GetDecisionById(node.Id);
             ruleDecisions.Remove(decision);
+
+            for (int i = Yarn.Count  -1; i > 0; i--)
+            {
+                if(Yarn[i].inputPort.MyNode == node || Yarn[i].outputPort.MyNode == node)
+                {
+                    Yarn.RemoveAt(i);
+                }
+            }
+            foreach (Thread port0Thread in rootNode.Port0.Connections)
+            {
+                if(port0Thread.outputPort.MyNode == node)
+                {
+                    rootNode.Port0.Connections.Remove(port0Thread);
+                    break;
+                }
+            }
+
         }
         else if (actionNode == node)
         {
@@ -600,7 +603,7 @@ public class RuleWindow2 : EditorWindow
         }
     }
 
-    private void OnRemoveThread(Thread thread)
+    private void OnRemoveAThread(Thread thread)
     {
         if (rootNode.Port0.Connections.Remove(thread)) return;
         if (rootNode.Port1.Connections.Remove(thread)) return;
