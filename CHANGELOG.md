@@ -8,7 +8,7 @@ All notable system upgrates will be tracked here.
 ### Added
 - Dynamic node change by object picker.
 
-##[0.9.0.2] - 2021-02-11
+##[0.9.2] - 2021-02-11
 
 ### Added
 - Initalized embedded asset system.
