@@ -1,0 +1,112 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class RuleController : MonoBehaviour
+{
+    public BehaviourProfile Profile;
+    List<Rule> potentialNextRule = new List<Rule>();
+    List<Rule> activeRulePool = new List<Rule>();
+
+    private void Update()
+    {
+        // Check activeRule list
+        if (activeRulePool.Count > 0)
+        {
+            for (int i = activeRulePool.Count - 1; i >= 0; i--)
+            {
+                // Remove if an ActiveRule is complete
+                if (activeRulePool[i].MyAction.IsComplete(this))
+                {
+                    Debug.Log("Action Complete: " + activeRulePool[i].MyAction.name);
+                    activeRulePool[i].MyAction.OnExitAction(this);
+                    activeRulePool.RemoveAt(i);
+                }
+            }
+        }
+
+        // Evaluate scheduled Rules
+        if (potentialNextRule.Count > 0)
+        {
+            RequalifyActivePool();
+            Rule highestPotential = GetHighestPotentialRule();
+
+            if (highestPotential.MyAction.CanDoBoth(activeRulePool.ToArray()))
+            {
+                highestPotential.MyAction.OnEnterAction(this);
+                activeRulePool.Add(highestPotential);
+                potentialNextRule.Clear();
+            }
+            else if(highestPotential.MyAction.CanInterupt())
+            {
+                InteruptActivePool();
+                highestPotential.MyAction.OnEnterAction(this);
+                activeRulePool.Add(highestPotential);
+                potentialNextRule.Clear();
+            }
+            else if(activeRulePool.Count == 0)
+            {
+                highestPotential.MyAction.OnEnterAction(this);
+                activeRulePool.Add(highestPotential);
+                potentialNextRule.Clear();
+            }
+        }
+
+        // Update Active Rules
+        foreach (Rule activeRule in activeRulePool)
+        {
+            activeRule.MyAction.Execute(this);
+        }
+    }
+
+    public void PoseRule(Rule rule)
+    {
+        if(!potentialNextRule.Contains(rule))
+        {
+            potentialNextRule.Add(rule);
+        }
+    }
+
+    /// <summary>
+    /// Updates Quality of Active Rules and set highest quality as threshold.
+    /// </summary>
+    private void RequalifyActivePool()
+    {
+
+        foreach (Rule activeRule in activeRulePool)
+        {
+           activeRule.MakeQualityDecision(this);
+        }
+    }
+
+    /// <summary>
+    /// Evaluates Quality decision of potential <see cref="Rule"/>.
+    /// </summary>
+    /// <returns>Highest quality rule</returns>
+    private Rule GetHighestPotentialRule()
+    {
+        Rule highestQtRule = null;
+
+        foreach (Rule potentialRule in potentialNextRule)
+        {
+            potentialRule.MakeQualityDecision(this);
+            if(highestQtRule == null|| highestQtRule.Quality < potentialRule.Quality)
+            {
+                highestQtRule = potentialRule;
+            }
+        }
+        potentialNextRule.Remove(highestQtRule);
+        return highestQtRule;
+    }
+    /// <summary>
+    /// Interupts all Active actions.
+    /// </summary>
+    private void InteruptActivePool()
+    {
+        foreach (Rule activeRule in activeRulePool)
+        {
+            activeRule.MyAction.OnExitAction(this);
+        }
+        activeRulePool.Clear();
+    }
+}

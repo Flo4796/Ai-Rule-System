@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 5a42a2834425cb742b4919200d7b12f9
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - m_ViewDataDictionary: {instanceID: 0}
+  - AdelicSkin: {fileID: 11400000, guid: 9447521204f40f647a69dfe85273f0c3, type: 2}
+  - NodeSkin: {fileID: 11400000, guid: bd02f32b630fd4745ac9d18133e1af4d, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
