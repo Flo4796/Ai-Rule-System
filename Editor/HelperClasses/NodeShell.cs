@@ -1,9 +1,10 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
+/// <summary>
+/// Represents base nodes on a <see cref="RuleWindow2"/>.
+/// </summary>
 public class NodeShell
 {
     /// <summary>
@@ -14,24 +15,29 @@ public class NodeShell
         public float FloatValue;
     }
 
+    #region General Fields
     public bool isDragged;
     public bool isSelected;
-    public int Id;
-    public Statement Asset;
-    public int[] Inputs;
-
     public Rect Rect;
     public float CurrentExpanedHeight;
     public NodeStyle Style;
     public GUISkin Skin;
     public bool Toggle;
     public Data Container;
-    public Port2 Port0;
-    public Port2 Port1;
-    public Port2 Port2;
+    public Port Port0;
+    public Port Port1;
+    public Port Port2;
     public Action<int, Statement, int[], Data, Vector2> OnUpdateRule;
-
+    public Action<NodeShell> OnRemoveNode;
     public bool activated = false;
+    #endregion
+
+    #region Decision Fields
+    public int Id;
+    public Statement Asset;
+    public int[] Inputs;
+    #endregion
+
 
     /// <summary>
     /// Draw GUILayout of this node.
@@ -129,6 +135,11 @@ public class NodeShell
 
     }
 
+    /// <summary>
+    /// Processes Unity events for this specific node.
+    /// </summary>
+    /// <param name="e">Current Unity Event.</param>
+    /// <returns>Changed GUI data.</returns>
     public bool ProcessEvents(Event e)
     {
         switch (e.type)
@@ -150,6 +161,15 @@ public class NodeShell
 
                     }
                 }
+                if(e.button == 1)
+                {
+                    if(Rect.Contains(e.mousePosition))
+                    {
+                        GenericMenu menu = new GenericMenu();
+                        menu.AddItem(new GUIContent("Remove", "Removes Node from rule"), false, () => OnRemoveNode(this));
+                        menu.ShowAsContext();
+                    }
+                }
                 break;
 
             case EventType.MouseUp:
@@ -168,8 +188,22 @@ public class NodeShell
 
         return false;
     }
+
+    /// <summary>
+    /// Processes Unity events for connected <see cref="Port"/>.
+    /// </summary>
+    /// <param name="e"></param>
+    public void ProcessPortEvents(Event e)
+    {
+        if (Port0 != null) Port0.ProcessEvents(e);
+        if (Port1 != null) Port1.ProcessEvents(e);
+        if (Port2 != null) Port2.ProcessEvents(e);
+    }
 }
 
+/// <summary>
+/// Derrived node for <see cref="Action"/> assets.
+/// </summary>
 public class ActionShell: NodeShell
 {
     public Action<Action, Vector2> OnUpdateAction;
@@ -207,6 +241,9 @@ public class ActionShell: NodeShell
     }
 }
 
+/// <summary>
+/// Derrived node representing <see cref="Rule"/> meta data as node.
+/// </summary>
 public class RootShell:NodeShell
 {
     public Action<int, int, Vector2> OnUpdateRoot;
@@ -282,5 +319,10 @@ public class RootShell:NodeShell
         {
             quality.Draw();
         }
+        foreach (Thread action in Port2.Connections)
+        {
+            action.Draw();
+        }
     }
+   
 }

@@ -1,8 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "RuleSystemCore/FactoryStatements/Operators/Subtract")]
+/// <summary>
+/// Build-In <see cref="Statement"/>. Type represents a math subtraction of the inputs.
+/// </summary>
+[CreateAssetMenu(menuName = "RuleSystem/Build-In/Mutator/Subtract")]
 public class SubtractStatement : Statement
 {
     public override float Evaluate(RuleController controller, Rule rule, Decision decision)

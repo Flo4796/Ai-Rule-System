@@ -1,7 +1,9 @@
 using UnityEngine;
 
-
-[CreateAssetMenu(menuName = "RuleSystemCore/FactoryStatements/Operators/Multiply")]
+/// <summary>
+/// Build-In <see cref="Statement"/>. Type represents a math product of the inputs.
+/// </summary>
+[CreateAssetMenu(menuName = "RuleSystem/Build-In/Mutator/Multiply")]
 public class MultiplyStatement : Statement
 {
     public override float Evaluate(RuleController controller, Rule rule, Decision decision)

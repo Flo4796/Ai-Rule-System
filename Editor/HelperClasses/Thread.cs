@@ -1,15 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
+/// <summary>
+/// Represents connection between two <see cref="NodeShell"/> by containing <see cref="Port"/> refrences.
+/// </summary>
 public class Thread
 {
-    public Port2 inputPort = null;
-    public Port2 outputPort = null;
+    public Port inputPort = null;
+    public Port outputPort = null;
     Color myColor = Color.white;
 
-    public Thread(Port2 _inPort, Port2 _outPort)
+    public Thread(Port _inPort, Port _outPort)
     {
         inputPort = _inPort;
         outputPort = _outPort;

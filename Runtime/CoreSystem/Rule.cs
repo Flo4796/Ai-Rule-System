@@ -11,7 +11,9 @@ public class Rule
     public string Description;
     public Vector2 RootGridPosition;
     public Vector2 ActionGridPosition;
+    /// <summary>Represents a seperate <see cref="Decision"/>-tree for evaluating how well this rule would work for executing <see cref="RuleController"/>.</summary>
     public int QualityId = -1;
+    /// <summary> Represents a <see cref="Decision"/>-tree of <see cref="Statement"/> that have to be true in order for the rule to work. </summary>
     public int MandatoryId = -1;
     public Decision[] MyDecisions;
     public Action MyAction;

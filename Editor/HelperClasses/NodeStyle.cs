@@ -1,7 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Base class representing Node GUILayout settings.
+/// </summary>
 public class NodeStyle
 {
     public string Name;
@@ -12,6 +13,9 @@ public class NodeStyle
     public float CollapsedHeight = 25;
     public float MinExpandedHeight = 100;
 }
+/// <summary>
+/// Derrived class representing Action node GUILayout settings.
+/// </summary>
 public class ActionStyle: NodeStyle
 {
     public ActionStyle(string name)
@@ -20,6 +24,9 @@ public class ActionStyle: NodeStyle
         Color = Color.white;
     }
 }
+/// <summary>
+/// Derrived class representing Root node GUILayout settings.
+/// </summary>
 public class RootNodeStyle:NodeStyle
 {
     public RootNodeStyle(string name)
@@ -30,6 +37,9 @@ public class RootNodeStyle:NodeStyle
         Type = StatementType.unknown;
     }
 }
+/// <summary>
+/// Derrived class representing Generator node GUILayout settings.
+/// </summary>
 public class GenNodeStyle : NodeStyle
 {
     public GenNodeStyle(string name)
@@ -39,6 +49,9 @@ public class GenNodeStyle : NodeStyle
         Type = StatementType.Generator;
     }
 }
+/// <summary>
+/// Derrived class representing Boolian node GUILayout settings.
+/// </summary>
 public class BoolNodeStyle : NodeStyle
 {
     public BoolNodeStyle(string name, StatementType type)
@@ -48,6 +61,9 @@ public class BoolNodeStyle : NodeStyle
         Type = type;
     }
 }
+/// <summary>
+/// Derrived class representing Mutator node GUILayout settings.
+/// </summary>
 public class MutNodeStyle : NodeStyle
 {
     public MutNodeStyle(string name)
@@ -57,6 +73,9 @@ public class MutNodeStyle : NodeStyle
         Type = StatementType.Mutator;
     }
 }
+/// <summary>
+/// Derrived class representing Custom node GUILayout settings.
+/// </summary>
 public class EvNodeStyle:NodeStyle
 {
     public EvNodeStyle(string name)

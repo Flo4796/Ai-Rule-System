@@ -1,8 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+/// <summary>
+/// Build-In <see cref="Statement"/>. Type = OR-Gate boolian logic.
+/// </summary>
 
-[CreateAssetMenu(menuName = "RuleSystemCore/FactoryStatements/Operators/Or")]
+[CreateAssetMenu(menuName = "RuleSystem/Build-In/Gate/Or")]
 public class OrStatement : Statement
 {
     public override float Evaluate(RuleController controller, Rule rule, Decision decision)

@@ -50,7 +50,10 @@ public static class RuleSystemUtil
         return collectedDecisions;
     }
 
-
+    /// <summary>
+    /// Captures all <see cref="Action"/> assets within project Resources folder. Sorted by set type.
+    /// </summary>
+    /// <returns><see cref=" Dictionary{TKey, TValue}"/> sorted Actions.</returns>
     public static Dictionary<ActionType, List<Action>> CollectActionsByType()
     {
         Dictionary<ActionType, List<Action>> collectedActions = new Dictionary<ActionType, List<Action>>();
@@ -71,7 +74,13 @@ public static class RuleSystemUtil
         return collectedActions;
     }
 
-
+    /// <summary>
+    /// Unwraps <see cref="Rule"/> from its Serialized counterpart.
+    /// </summary>
+    /// <param name="ruleProperty">Serialized version of rule.</param>
+    /// <param name="parentRuleSet">String name representing set containing this Rule.</param>
+    /// <param name="ruleIndex">Zero-based index of rule in ruleset array. </param>
+    /// <returns></returns>
     public static Rule DeserializeRule(SerializedProperty ruleProperty, string parentRuleSet, int ruleIndex)
     {
         FieldInfo profileInfo = ruleProperty.serializedObject.targetObject.GetType().GetField("Profile");
@@ -81,6 +90,13 @@ public static class RuleSystemUtil
         return set[ruleIndex];
     }
 
+    /// <summary>
+    /// Updates Serialized property counterpart of <see cref="Rule"/>.
+    /// </summary>
+    /// <param name="rule">Updated <see cref="Rule"/> version. </param>
+    /// <param name="ruleProperty">Rule serialized counterpart.</param>
+    /// <param name="parentRuleSet">String name representing set containing this Rule.</param>
+    /// <param name="ruleIndex">Zero-based index of rule in ruleset array. </param>
     public static void SerializeRule(Rule rule, SerializedProperty ruleProperty, string parentRuleSet, int ruleIndex)
     {
         FieldInfo profileInfo = ruleProperty.serializedObject.targetObject.GetType().GetField("Profile");

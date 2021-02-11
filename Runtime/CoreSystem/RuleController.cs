@@ -1,7 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Represents HUB of Rule System. Processes Rule update and Handles change-requests.
+/// </summary>
 public class RuleController : MonoBehaviour
 {
     public BehaviourProfile Profile;
@@ -18,7 +20,6 @@ public class RuleController : MonoBehaviour
                 // Remove if an ActiveRule is complete
                 if (activeRulePool[i].MyAction.IsComplete(this))
                 {
-                    Debug.Log("Action Complete: " + activeRulePool[i].MyAction.name);
                     activeRulePool[i].MyAction.OnExitAction(this);
                     activeRulePool.RemoveAt(i);
                 }
@@ -58,7 +59,10 @@ public class RuleController : MonoBehaviour
             activeRule.MyAction.Execute(this);
         }
     }
-
+    /// <summary>
+    /// External-Handle. Allows rule posing by external systems.
+    /// </summary>
+    /// <param name="rule">Rule to pose.</param>
     public void PoseRule(Rule rule)
     {
         if(!potentialNextRule.Contains(rule))

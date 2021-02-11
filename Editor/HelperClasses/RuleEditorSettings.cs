@@ -22,9 +22,9 @@ public class RuleEditorSettings
     private static void Load()
     {
         string path = Application.dataPath.Replace("Assets", "ProjectSettings\\RuleEditorSettings.json");
-        string jsonSettings = File.ReadAllText(path);
-        if(jsonSettings!= string.Empty)
+        if(File.Exists(path))
         {
+            string jsonSettings = File.ReadAllText(path);
             instance = JsonUtility.FromJson<RuleEditorSettings>(jsonSettings);
         }
         else

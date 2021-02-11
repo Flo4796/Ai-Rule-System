@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using static RuleEditorSettings;
 /// <summary>
-/// Represents Draw functions for all layout area's in both <see cref="LibraryWindow"/> and <see cref="RuleWindow"/>.
+/// Represents Draw functions for all layout area's in both <see cref="LibraryWindow"/> and <see cref="RuleWindow2"/>.
 /// </summary>
 public static class LibraryLayoutUtil
 {
@@ -71,6 +71,14 @@ public static class LibraryLayoutUtil
         return null;
     }
 
+    /// <summary>
+    /// Draws opened <see cref="BehaviourProfile"/>. Shows Rules and Rule-sets.
+    /// </summary>
+    /// <param name="profileToDisplay"><see cref="SerializedObject"/> of opened target profile.</param>
+    /// <param name="layoutArea">Rectangle containing size and position of this area within an editorwindow. </param>
+    /// <param name="data"><see cref="SessionData"/> container used by an editorwindow. </param>
+    /// <param name="skin"><see cref="GUISkin"/> of area layout. </param>
+    /// <returns>Selected <see cref="Rule"/> property. </returns>
     public static SerializedProperty DrawProfileLayout(SerializedObject profileToDisplay, Rect layoutArea, ref SessionData data, GUISkin skin)
     {
         SerializedProperty profileProp = profileToDisplay.FindProperty("Profile");
@@ -108,6 +116,16 @@ public static class LibraryLayoutUtil
         return null;
     }
 
+    /// <summary>
+    /// Draws info panel containing profile information.
+    /// </summary>
+    /// <param name="displayProfile"><see cref="SerializedObject"/> of opened target profile. </param>
+    /// <param name="selectedRule"><see cref="Rule"/> that is selected. Shows rule information.</param>
+    /// <param name="layoutArea">Rectangle containing size and position of this area within an editorwindow. </param>
+    /// <param name="OnOpenRule">Action-event handles opening a <see cref="RuleWindow2"/>.</param>
+    /// <param name="data"><see cref="SessionData"/> container used by an editorwindow.</param>
+    /// <param name="skin"><see cref="GUISkin"/> of area layout. </param>
+    /// <returns><see cref="SerializedProperty"/> of opended rule. </returns>
     public static SerializedProperty DrawPropertyInfoLayout(SerializedObject displayProfile, SerializedProperty selectedRule, Rect layoutArea,Action<SerializedProperty> OnOpenRule ,ref SessionData data ,GUISkin skin)
     {
         GUILayout.BeginArea(layoutArea, skin.window);
@@ -301,6 +319,11 @@ public static class LibraryLayoutUtil
         return null;
     }
 
+    /// <summary>
+    /// Draws layout for Profile data tab.
+    /// </summary>
+    /// <param name="displayProfile">Profile to display. </param>
+    /// <param name="skin"><see cref="GUISkin"/> of area layout.</param>
     private static void ProfileData(SerializedObject displayProfile, GUISkin skin)
     {
         GUILayout.Label("Profile info: ");
@@ -354,7 +377,14 @@ public static class LibraryLayoutUtil
         }
         GUILayout.EndHorizontal();
     }
-
+    /// <summary>
+    /// Draws layout for selected rule tab.
+    /// </summary>
+    /// <param name="rule">Selected rule property. </param>
+    /// <param name="data"><see cref="SessionData"/> refrence of an editorwindow.</param>
+    /// <param name="OnOpenRule">Action-Event handle for opening <see cref="RuleWindow2"/>.</param>
+    /// <param name="skin"><see cref="GUISkin"/> of area layout.</param>
+    /// <returns></returns>
     private static SerializedProperty EditRuleData(SerializedProperty rule, ref SessionData data,Action<SerializedProperty> OnOpenRule ,GUISkin skin)
     {
         string[] parentPath = rule.propertyPath.Remove(rule.propertyPath.IndexOf("Array") - 1).Split('.');
@@ -434,7 +464,10 @@ public static class LibraryLayoutUtil
 
     }
 
-
+    /// <summary>
+    /// Clears out ruleProperty so new rule isn't duplicate of last rule in set.
+    /// </summary>
+    /// <param name="ruleProperty">Rule property to clear. </param>
     private static void ClearRuleProperty(SerializedProperty ruleProperty)
     {
         ruleProperty.FindPropertyRelative("RuleName").stringValue = "New Rule";

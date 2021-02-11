@@ -1,6 +1,9 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "RuleSystemCore/FactoryStatements/Operators/And")]
+/// <summary>
+/// Build-In <see cref="Statement"/>. Type = AND-Gate boolian logic.
+/// </summary>
+[CreateAssetMenu(menuName = "RuleSystem/Build-In/Gate/And")]
 public class AndStatement : Statement
 {
     public override float Evaluate(RuleController controller, Rule rule, Decision decision)

@@ -1,5 +1,7 @@
 using UnityEngine;
-
+/// <summary>
+/// Represents base class of something a rule-based-entity can evaluate.
+/// </summary>
 public abstract class Statement: ScriptableObject 
 {
     public string Name;

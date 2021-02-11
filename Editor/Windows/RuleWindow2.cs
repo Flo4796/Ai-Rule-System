@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -18,8 +17,8 @@ public class RuleWindow2 : EditorWindow
     List<NodeShell> ruleNodes = new List<NodeShell>();
     List<Thread> Yarn = new List<Thread>();
     Action ruleAction = null;
-    Port2 selectedInPort = null;
-    Port2 selectedOutPort = null;
+    Port selectedInPort = null;
+    Port selectedOutPort = null;
     RootShell rootNode = null;
     NodeShell createdNode = null;
     ActionShell actionNode = null;
@@ -30,8 +29,6 @@ public class RuleWindow2 : EditorWindow
     Vector2 drag;
     Vector2 mousePos;
     #endregion
-
-
 
     public void Initialize()
     {
@@ -46,7 +43,6 @@ public class RuleWindow2 : EditorWindow
         LoadThreads();
         isInitialized = true;
     }
-
     private void OnGUI()
     {
         if (!isInitialized) { return; }
@@ -64,7 +60,7 @@ public class RuleWindow2 : EditorWindow
 
         // Draw ContextMenu
         RuleLayoutUtil.DrawContentLibraryLayout(capturedStatements, OnRequestDecisionNode, 
-                                                capturedActions, OnRequestActionNode,
+                                                capturedActions, OnRequestActionNode, SubjectRule,
                                                 WindowUtils.ContentMenuLayout,ref myData, AdelicSkin);
 
         // process events
@@ -84,6 +80,9 @@ public class RuleWindow2 : EditorWindow
     }
 
     #region Serialization
+    /// <summary>
+    /// Load function that unpacks <see cref="Rule"/> from corresponding <see cref="SerializedProperty"/>.
+    /// </summary>
     private void LoadRule()
     {
         string setName = SubjectRule.propertyPath.Remove(SubjectRule.propertyPath.IndexOf(".Array")).Replace("Profile.", "");
@@ -93,14 +92,13 @@ public class RuleWindow2 : EditorWindow
         rootNode = RuleCreator.CreateRoot(deserializedRule.RootGridPosition, OnNodePortContact, OnUpdateRootRequest,deserializedRule.MandatoryId, deserializedRule.QualityId, NodeSkin);
         if (deserializedRule.MyAction != null)
         {
-            actionNode = RuleCreator.CreateActionNode(deserializedRule.ActionGridPosition, OnNodePortContact, OnUpdateActionRequest, deserializedRule.MyAction, NodeSkin);
-            actionNode.activated = true;
+            actionNode = RuleCreator.CreateActionNode(deserializedRule.ActionGridPosition, OnNodePortContact, OnUpdateActionRequest, OnRemoveNode, deserializedRule.MyAction, NodeSkin);
         }
         foreach (Decision decision in deserializedRule.MyDecisions)
         {
 
             ruleDecisions.Add(decision);
-            NodeShell rawNode = RuleCreator.CreateNewDecisionNode(decision.identifier, decision.Operator,OnUpdateRuleRequest, OnNodePortContact, NodeSkin);
+            NodeShell rawNode = RuleCreator.CreateNewDecisionNode(decision.identifier, decision.Operator,OnUpdateRuleRequest, OnNodePortContact, OnRemoveNode ,NodeSkin);
             rawNode.Container = new NodeShell.Data
             {
                 FloatValue = decision.FlatValue
@@ -111,6 +109,9 @@ public class RuleWindow2 : EditorWindow
             ruleNodes.Add(rawNode);
         }
     }
+    /// <summary>
+    /// Creates established threads from deserialized Rule.
+    /// </summary>
     private void LoadThreads()
     {
         if (rootNode.MandatoryID != -1)
@@ -126,6 +127,13 @@ public class RuleWindow2 : EditorWindow
             rootNode.Port1.Connections.Add(qualityThread);
         }
         rootNode.activated = true;
+        if(actionNode!= null)
+        {
+            Thread actionThread = new Thread(rootNode.Port2, actionNode.Port0);
+            rootNode.Port2.Connections.Add(actionThread);
+            actionNode.activated = true;
+        }
+
         foreach (NodeShell node in ruleNodes)
         {
             if(node.Inputs.Length > 0)
@@ -140,7 +148,9 @@ public class RuleWindow2 : EditorWindow
             }
         }
     }
-
+    /// <summary>
+    /// Save function that repacks Rule into <see cref=" SerializedProperty"/> and updates Obj.
+    /// </summary>
     private void SaveRule()
     {
         string setName = SubjectRule.propertyPath.Remove(SubjectRule.propertyPath.IndexOf(".Array")).Replace("Profile.", "");
@@ -158,6 +168,9 @@ public class RuleWindow2 : EditorWindow
     #endregion
 
     #region Draw
+    /// <summary>
+    /// Iteration over <see cref="NodeShell"/> in window. Triggers Draw - functionality.
+    /// </summary>
     private void DrawNodes()
     {
         rootNode.Draw();
@@ -168,15 +181,23 @@ public class RuleWindow2 : EditorWindow
             node.Draw();
         }
     }
+    /// <summary>
+    /// Iteration over <see cref="Thread"/> in window. Triggers Draw - functionality.
+    /// </summary>
     private void DrawThreads()
     {
         rootNode.DrawThreads();
-
         foreach (Thread thread in Yarn)
         {
             thread.Draw();
         }
     }
+    /// <summary>
+    /// Draws grid.
+    /// </summary>
+    /// <param name="gridSpacing">Spacing between two grid lines. </param>
+    /// <param name="gridOpacity">Opacity of grid lines. </param>
+    /// <param name="gridColor">Color of grid background. </param>
     private void DrawGrid(float gridSpacing, float gridOpacity, Color gridColor)
     {
         int widthDivs = Mathf.CeilToInt(position.width / gridSpacing);
@@ -203,7 +224,12 @@ public class RuleWindow2 : EditorWindow
     }
     #endregion
 
-    #region Decision Helpers
+    #region Node Helpers
+    /// <summary>
+    /// Returns <see cref="Decision"/> by iterating ruleDecisions.
+    /// </summary>
+    /// <param name="id">Decision specific identifier.</param>
+    /// <returns></returns>
     private Decision GetDecisionById(int id)
     {
         foreach (Decision decision in ruleDecisions)
@@ -212,6 +238,11 @@ public class RuleWindow2 : EditorWindow
         }
         return null;
     }
+    /// <summary>
+    /// Returns corresponding <see cref="NodeShell"/> of a decision by id.
+    /// </summary>
+    /// <param name="id">Decision specific identifier. </param>
+    /// <returns></returns>
     private NodeShell GetNodeById(int id)
     {
         foreach (NodeShell node in ruleNodes)
@@ -220,6 +251,11 @@ public class RuleWindow2 : EditorWindow
         }
         return null;
     }
+    /// <summary>
+    /// Returns <see cref="int"/> number that is unique relative to the current <see cref="Rule"/>. 
+    /// Used to identify <see cref="Decision"/>.
+    /// </summary>
+    /// <returns></returns>
     private int GenerateDecisionId()
     {
         int id = 0;
@@ -243,7 +279,7 @@ public class RuleWindow2 : EditorWindow
     #endregion
 
     #region Port/Thread Helpers
-    private bool IsConnected(Port2 input, Port2 output)
+    private bool IsConnected(Port input, Port output)
     {
         foreach (Thread thread in Yarn)
         {
@@ -257,6 +293,10 @@ public class RuleWindow2 : EditorWindow
     #endregion
 
     #region I/O Functions
+    /// <summary>
+    /// Process handle for <see cref="Thread"/> that is currently being made.
+    /// </summary>
+    /// <param name="e">Current Unity Event. </param>
     private void ProcessLiveThread(Event e)
     {
         if (selectedInPort != null & selectedOutPort == null)
@@ -289,6 +329,10 @@ public class RuleWindow2 : EditorWindow
             GUI.changed = true;
         }
     }
+    /// <summary>
+    /// Event handle for nodes that are being created.
+    /// </summary>
+    /// <param name="e">Current Unity Event. </param>
     private void ProcessCreatedNode(Event e)
     {
         if (createdNode != null)
@@ -344,6 +388,10 @@ public class RuleWindow2 : EditorWindow
             }
         }
     }
+    /// <summary>
+    /// Input event processing for <see cref="RuleWindow2"/>.
+    /// </summary>
+    /// <param name="e">Current Unity Event. </param>
     private void ProcessEvent(Event e)
     {
         drag = Vector2.zero;
@@ -359,10 +407,14 @@ public class RuleWindow2 : EditorWindow
                 break;
         }
     }
+    /// <summary>
+    /// Iteration through <see cref="NodeShell"/>, executing ProcessEvent - function.
+    /// </summary>
+    /// <param name="e">Current Unity Event. </param>
     private void ProcessNodeEvents(Event e)
     {
         rootNode.ProcessEvents(e);
-        if(actionNode!= null) { actionNode.ProcessEvents(e); }
+        if (actionNode != null) { actionNode.ProcessEvents(e); }
         if (ruleNodes != null)
         {
             for (int i = ruleNodes.Count - 1; i >= 0; i--)
@@ -376,6 +428,24 @@ public class RuleWindow2 : EditorWindow
             }
         }
     }
+    /// <summary>
+    /// Iterates through <see cref="NodeShell"/> and executes ProcessPortEvent -function.
+    /// </summary>
+    /// <param name="e"></param>
+    private void ProcessThreadEvents(Event e)
+    {
+        rootNode.ProcessPortEvents(e);
+
+        foreach (NodeShell node in ruleNodes)
+        {
+            node.ProcessPortEvents(e);
+        }
+
+    }
+    /// <summary>
+    /// Handles Object drag for Nodes.
+    /// </summary>
+    /// <param name="delta">Mouse delta compared to previous frame. </param>
     private void OnDrag(Vector2 delta)
     {
         drag = delta;
@@ -395,21 +465,37 @@ public class RuleWindow2 : EditorWindow
     #endregion
 
     #region Event Handles
+    /// <summary>
+    /// Action-event handles <see cref="NodeShell"/> instantiation. Used specificly for <see cref="Decision"/> nodes.
+    /// </summary>
+    /// <param name="statement"><see cref="Statement"/> requesting node. </param>
     private void OnRequestDecisionNode(Statement statement)
     {
         createdDecision = new Decision();
         createdDecision.identifier = GenerateDecisionId();
         createdDecision.Operator = statement;
-        createdNode = RuleCreator.CreateNewDecisionNode(createdDecision.identifier, statement, OnUpdateRuleRequest, OnNodePortContact, NodeSkin);
+        createdNode = RuleCreator.CreateNewDecisionNode(createdDecision.identifier, statement, OnUpdateRuleRequest, OnNodePortContact, OnRemoveNode, NodeSkin);
         createdNode.Rect.position = mousePos;
         
     }
+    /// <summary>
+    /// Action-event handles <see cref="ActionShell"/> instantiation.
+    /// </summary>
+    /// <param name="action"><see cref="Action"/> that needs a node. </param>
     private void OnRequestActionNode(Action action)
     {
-        createdActionNode = RuleCreator.CreateActionNode(deserializedRule.ActionGridPosition, OnNodePortContact, OnUpdateActionRequest, action, NodeSkin);
+        createdActionNode = RuleCreator.CreateActionNode(deserializedRule.ActionGridPosition, OnNodePortContact, OnUpdateActionRequest, OnRemoveNode, action, NodeSkin);
         createdActionNode.Rect.position = mousePos;
 
     }
+    /// <summary>
+    /// Action-event handles <see cref="NodeShell"/> update request. Triggers when node content changes.
+    /// </summary>
+    /// <param name="id"><see cref="Decision"/> unique identifier. </param>
+    /// <param name="asset">Currently set <see cref="Statement"/> for decision.</param>
+    /// <param name="inputs">Identifiers of evaluation-dependent decisions. </param>
+    /// <param name="data">Decision specifc data structure. (i.e. flatvalue). </param>
+    /// <param name="position">Grid position of node. </param>
     private void OnUpdateRuleRequest(int id, Statement asset, int[] inputs, NodeShell.Data data, Vector2 position)
     {
         Decision decision = GetDecisionById(id);
@@ -420,18 +506,34 @@ public class RuleWindow2 : EditorWindow
         decision.FlatValue = data.FloatValue;
         decision.GridPosition = position;
     }
+    /// <summary>
+    /// Action-event handles <see cref="RootShell"/> update request. Triggers when root node content changes.
+    /// </summary>
+    /// <param name="mandatoryID">Identifier of mandatory decision parameter.</param>
+    /// <param name="QualityID">Identifier of Quality decision parameter.</param>
+    /// <param name="position">Grid position of root node.</param>
     private void OnUpdateRootRequest(int mandatoryID, int QualityID, Vector2 position)
     {
         deserializedRule.MandatoryId = mandatoryID;
         deserializedRule.QualityId = QualityID;
         deserializedRule.RootGridPosition = position;
     }
+    /// <summary>
+    /// Action-event handles <see cref="ActionShell"/> update request. Triggers when an action nodes content changes.
+    /// </summary>
+    /// <param name="action">Currently updating <see cref="Action"/>.</param>
+    /// <param name="position">Gridposition of <see cref="ActionShell"/>.</param>
     private void OnUpdateActionRequest(Action action, Vector2 position)
     {
         deserializedRule.ActionGridPosition = position;
         deserializedRule.MyAction = action;
     }
-    private void OnNodePortContact(Port2 port)
+    /// <summary>
+    /// Action-event handles <see cref="Port"/> clicks by user. 
+    /// Connects two nodes together by <see cref="Thread"/> when specific conditions are met.
+    /// </summary>
+    /// <param name="port">Currently triggered <see cref="Port"/>.</param>
+    private void OnNodePortContact(Port port)
     {
         if(port.type == PortType.Input)
         {
@@ -479,6 +581,31 @@ public class RuleWindow2 : EditorWindow
             }
         }
 
+    }
+    /// <summary>
+    /// Action-event handles <see cref="NodeShell"/> remove from  rule requests.
+    /// </summary>
+    /// <param name="node">Node that requests to be removed.</param>
+    private void OnRemoveNode(NodeShell node)
+    {
+        if (ruleNodes.Remove(node))
+        {
+            var decision = GetDecisionById(node.Id);
+            ruleDecisions.Remove(decision);
+        }
+        else if (actionNode == node)
+        {
+            actionNode = null;
+            ruleAction = null;
+        }
+    }
+
+    private void OnRemoveThread(Thread thread)
+    {
+        if (rootNode.Port0.Connections.Remove(thread)) return;
+        if (rootNode.Port1.Connections.Remove(thread)) return;
+        if (rootNode.Port2.Connections.Remove(thread)) return;
+        if (Yarn.Contains(thread)) return;
     }
 
     #endregion

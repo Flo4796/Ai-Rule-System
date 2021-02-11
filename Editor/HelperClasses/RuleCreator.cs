@@ -1,11 +1,22 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Represents static helper class for creating <see cref="NodeShell"/> within <see cref="RuleWindow2"/.>
+/// </summary>
 public static class RuleCreator
 {
-    public static RootShell CreateRoot(Vector2 position, Action<Port2> OnPortClick, Action<int,int,Vector2> OnRootUpdate ,int mandatoryID, int QualityID, GUISkin skin)
+    /// <summary>
+    /// Creates a Root node.
+    /// </summary>
+    /// <param name="position">Grid position. </param>
+    /// <param name="OnPortClick">Event-handle for <see cref="Port"/> clicks. </param>
+    /// <param name="OnRootUpdate">Event-handle for updating <see cref="Rule"/> data. </param>
+    /// <param name="mandatoryID">Representing Mandatory <see cref="Decision"/> identifier. </param>
+    /// <param name="QualityID">Representing Wuality decision identifier. </param>
+    /// <param name="skin"><see cref="GUISkin"/> of nodes. </param>
+    /// <returns></returns>
+    public static RootShell CreateRoot(Vector2 position, Action<Port> OnPortClick, Action<int,int,Vector2> OnRootUpdate ,int mandatoryID, int QualityID, GUISkin skin)
     {
         RootNodeStyle style = new RootNodeStyle("Root");
         RootShell root = new RootShell
@@ -19,8 +30,9 @@ public static class RuleCreator
         root.Rect.position = position;
         root.MandatoryID = mandatoryID;
         root.QualityID = QualityID;
-        root.Port0 = new Port2
+        root.Port0 = new Port
         {
+            Name = "Mandatory",
             type = PortType.Input,
             MyNode = root,
             nodeSkin = skin,
@@ -28,8 +40,9 @@ public static class RuleCreator
             rect = new Rect(0, 0, skin.button.fixedWidth, skin.button.fixedHeight),
             isDecision = true
         };
-        root.Port1 = new Port2
+        root.Port1 = new Port
         {
+            Name = "Quality",
             type = PortType.Input,
             MyNode = root,
             nodeSkin = skin,
@@ -37,8 +50,9 @@ public static class RuleCreator
             rect = new Rect(0, 0, skin.button.fixedWidth, skin.button.fixedHeight),
             isDecision = true
         };
-        root.Port2 = new Port2
+        root.Port2 = new Port
         {
+            Name = "Action",
             type = PortType.Input,
             MyNode = root,
             nodeSkin = skin,
@@ -49,7 +63,17 @@ public static class RuleCreator
         return root;
     }
 
-    public  static ActionShell CreateActionNode(Vector2 position, Action<Port2> OnPortClick, Action<Action, Vector2> OnActionUpdate,Action action ,GUISkin skin)
+    /// <summary>
+    /// Creates an Action node.
+    /// </summary>
+    /// <param name="position">Grid position. </param>
+    /// <param name="OnPortClick">Event-handle for <see cref="Port"/> clicks. </param>
+    /// <param name="OnActionUpdate">Event-hanlde for updating <see cref="Action"/> data. </param>
+    /// <param name="OnRemoveNode">Event-handle for removing this node. </param>
+    /// <param name="action">Action asset represented by this node. </param>
+    /// <param name="skin"><see cref="GUISkin"/> of nodes. </param>
+    /// <returns></returns>
+    public static ActionShell CreateActionNode(Vector2 position, Action<Port> OnPortClick, Action<Action, Vector2> OnActionUpdate, Action<NodeShell> OnRemoveNode, Action action ,GUISkin skin)
     {
         ActionStyle style = new ActionStyle(action.Name);
         ActionShell crAct = new ActionShell
@@ -57,13 +81,15 @@ public static class RuleCreator
             Id = -1,
             Action = action,
             OnUpdateAction = OnActionUpdate,
+            OnRemoveNode = OnRemoveNode,
             Skin = skin,
             Style = style,
             Rect = style.Rect
         };
         crAct.Rect.position = position;
-        crAct.Port0 = new Port2
+        crAct.Port0 = new Port
         {
+            Name = action.Name,
             type = PortType.Output,
             MyNode = crAct,
             nodeSkin = skin,
@@ -73,7 +99,17 @@ public static class RuleCreator
         };
         return crAct;
     }
-    public static NodeShell CreateNewDecisionNode(int id, Statement statement, Action<int, Statement, int[], NodeShell.Data, Vector2> OnRuleUpdate, Action<Port2> OnPortClick, GUISkin skin)
+    /// <summary>
+    /// Creates a node (specificly used for <see cref="Decision"/> nodes).
+    /// </summary>
+    /// <param name="id">Decision identifier. </param>
+    /// <param name="statement">Decision asset represented by this node. </param>
+    /// <param name="OnRuleUpdate">Event-handle for updating <see cref="Decision"/> data. </param>
+    /// <param name="OnPortClick">Event-handle for <see cref="Port"/> clicks. </param>
+    /// <param name="OnRemoveNode">Event-handle for removing this node. </param>>
+    /// <param name="skin"><see cref="GUISkin"/> of nodes. </param>
+    /// <returns></returns>
+    public static NodeShell CreateNewDecisionNode(int id, Statement statement, Action<int, Statement, int[], NodeShell.Data, Vector2> OnRuleUpdate, Action<Port> OnPortClick, Action<NodeShell> OnRemoveNode, GUISkin skin)
     {
         NodeShell crNode = new NodeShell
         {
@@ -82,7 +118,8 @@ public static class RuleCreator
             Inputs = new int[0],
             Container = new NodeShell.Data(),
             Skin = skin,
-            OnUpdateRule = OnRuleUpdate
+            OnUpdateRule = OnRuleUpdate,
+            OnRemoveNode = OnRemoveNode
         };
         switch (statement.Type)
         {
@@ -94,9 +131,10 @@ public static class RuleCreator
                 crNode.Style = boolStyle;
                 crNode.Rect = boolStyle.Rect;
                 crNode.CurrentExpanedHeight = boolStyle.MinExpandedHeight;
-                crNode.Port0 = new Port2
+                crNode.Port0 = new Port
                 {
                     type = PortType.Input,
+                    Name = statement.Name,
                     MyNode = crNode,
                     nodeSkin = skin,
                     OnClickPort = OnPortClick,
@@ -116,9 +154,10 @@ public static class RuleCreator
                 crNode.Style = mutStyle;
                 crNode.Rect = mutStyle.Rect;
                 crNode.CurrentExpanedHeight = mutStyle.MinExpandedHeight;
-                crNode.Port0 = new Port2
+                crNode.Port0 = new Port
                 {
                     type = PortType.Input,
+                    Name = statement.Name,
                     MyNode = crNode,
                     nodeSkin = skin,
                     OnClickPort = OnPortClick,
@@ -132,8 +171,9 @@ public static class RuleCreator
                 crNode.CurrentExpanedHeight = evStyle.MinExpandedHeight;
                 break;
         }
-        crNode.Port1 = new Port2
+        crNode.Port1 = new Port
         {
+            Name = statement.Name,
             type = PortType.Output,
             MyNode = crNode,
             nodeSkin = skin,
@@ -145,6 +185,11 @@ public static class RuleCreator
         return crNode;
     }
 
+    /// <summary>
+    /// Swiches decision nodes existing style.
+    /// </summary>
+    /// <param name="statement"></param>
+    /// <param name="node"></param>
     public static void ChangeStyle(Statement statement, ref NodeShell node)
     {
         switch (statement.Type)

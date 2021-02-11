@@ -2,7 +2,6 @@
     "name": "com.ai-rule-system.Runtime",
     "rootNamespace": "",
     "references": [
-        "GUID:56bbb9df476ae9f4fa399b6a620f0d8a"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
