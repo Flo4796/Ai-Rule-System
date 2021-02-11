@@ -1,5 +1,5 @@
 {
-    "name": "Editor",
+    "name": "com.ai-rule-system.Editor",
     "rootNamespace": "",
     "references": [
         "GUID:1181cb6c0c5cc954eba8a0fa110e0e76"
