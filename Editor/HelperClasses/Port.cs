@@ -19,7 +19,7 @@ public class Port
     public Action<Port> OnClickPort;
     public Action<Thread> OnRemoveThread;
     public GUISkin nodeSkin;
-    const string ThreadFormat = "Remove thread: {0} > {1}";
+    const string ThreadFormat = "Remove thread: {1} > {0}";
 
     public void Draw()
     {

@@ -16,7 +16,7 @@ public static class RuleCreator
     /// <param name="QualityID">Representing Wuality decision identifier. </param>
     /// <param name="skin"><see cref="GUISkin"/> of nodes. </param>
     /// <returns></returns>
-    public static RootShell CreateRoot(Vector2 position, Action<Port> OnPortClick, Action<int,int,Vector2> OnRootUpdate ,Action<Thread> OnRemoveThread ,int mandatoryID, int QualityID, GUISkin skin)
+    public static RootShell CreateRoot(Vector2 position, Action<Port> OnPortClick, Action<int,int,Vector2> OnRootUpdate ,Action<Thread> OnRemoveThread ,int mandatoryID, int QualityID, Action action, GUISkin skin)
     {
         RootNodeStyle style = new RootNodeStyle("Root");
         RootShell root = new RootShell
@@ -25,6 +25,7 @@ public static class RuleCreator
             Style = style,
             Rect = style.Rect,
             Skin = skin,
+            Action = action,
             OnUpdateRoot = OnRootUpdate
         };
         root.Rect.position = position;

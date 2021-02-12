@@ -3,6 +3,20 @@
 Adelic Systems(c) Asset-base AI Rule System and Rule System Editors.
 All notable system upgrates will be tracked here.
 
+## [1.0.0]
+### Added
+- Build-In Assets for Inequality operations.
+- Small visual touch ups.
+- Ability to set Generic Set names in Library.
+
+## Changed
+- Rect size of Action.
+- Asset loading.
+
+### Fixed
+- Several remove funcions kept id refrences.
+- Action serialization and debug.
+
 ##[0.9.1] - 2021-02-11
 
 ### Added

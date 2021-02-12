@@ -32,8 +32,14 @@ public static class RuleSystemUtil
     public static Dictionary<StatementType, List<Statement>> CollectDecisionsByType()
     {
         Dictionary<StatementType, List<Statement>> collectedDecisions = new Dictionary<StatementType, List<Statement>>();
-
-        List<Statement> rawCollectedDecisions = new List<Statement>(Resources.FindObjectsOfTypeAll<Statement>());
+        string[] guids = AssetDatabase.FindAssets("t:Statement");
+        List<Statement> rawCollectedDecisions = new List<Statement>();
+        foreach (string guid in guids)
+        {
+            rawCollectedDecisions.Add(AssetDatabase.LoadAssetAtPath<Statement>(AssetDatabase.GUIDToAssetPath(guid)));
+        }
+        
+        
         if(rawCollectedDecisions == null || rawCollectedDecisions.Count == 0) { throw new Exception("Error no Statements collected!"); }
 
         foreach (Statement statement in rawCollectedDecisions)
@@ -58,7 +64,12 @@ public static class RuleSystemUtil
     {
         Dictionary<ActionType, List<Action>> collectedActions = new Dictionary<ActionType, List<Action>>();
 
-        List<Action> capturedActions = new List<Action>(Resources.FindObjectsOfTypeAll<Action>());
+        List<Action> capturedActions = new List<Action>();
+        string[] GUIDs = AssetDatabase.FindAssets("t:Action");
+        foreach (string GUID in GUIDs)
+        {
+            capturedActions.Add(AssetDatabase.LoadAssetAtPath<Action>(AssetDatabase.GUIDToAssetPath(GUID)));
+        }
 
         foreach (Action action in capturedActions)
         {

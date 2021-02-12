@@ -110,8 +110,12 @@ public static class RuleLayoutUtil
     /// <param name="skin"></param>
     private static void drawRuleInfo(SerializedProperty ruleProperty, GUISkin skin)
     {
+        GUILayout.Space(5);
+        GUILayout.Label("Name: ");
         ruleProperty.FindPropertyRelative("RuleName").stringValue = GUILayout.TextField(ruleProperty.FindPropertyRelative("RuleName").stringValue);
-        ruleProperty.FindPropertyRelative("Description").stringValue = GUILayout.TextArea(ruleProperty.FindPropertyRelative("Description").stringValue);
+        GUILayout.Space(5);
+        GUILayout.Label("Description: ");
+        ruleProperty.FindPropertyRelative("Description").stringValue = GUILayout.TextArea(ruleProperty.FindPropertyRelative("Description").stringValue, GUILayout.Height(50));
         ruleProperty.serializedObject.ApplyModifiedProperties();
     }
 }

@@ -22,6 +22,7 @@ public class ActionStyle: NodeStyle
     {
         Name = name;
         Color = Color.white;
+        Rect.size = new Vector2(135, 75);
     }
 }
 /// <summary>

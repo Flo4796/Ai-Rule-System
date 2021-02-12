@@ -238,6 +238,7 @@ public class RootShell:NodeShell
     public Action<int, int, Vector2> OnUpdateRoot;
     public int MandatoryID;
     public int QualityID;
+    public Action Action;
     public override void Draw()
     {
         if (!activated) { return; }
@@ -292,7 +293,13 @@ public class RootShell:NodeShell
             }
             else { QualityID = -1; }
         }
-        //TODO : Action Prt?!
+        if(Port2 != null)
+        {
+            if(Port2.Connections.Count > 0)
+            {
+                Action = (Port2.Connections[0].outputPort.MyNode as ActionShell).Action;
+            }
+        }
 
         // sent
         OnUpdateRoot(MandatoryID, QualityID, Rect.position);

@@ -1,5 +1,5 @@
 {
-    "name": "com.ai-rule-system.Editor",
+    "name": "com.ai-rule-system.Runtime",
     "rootNamespace": "",
     "references": [],
     "includePlatforms": [],
