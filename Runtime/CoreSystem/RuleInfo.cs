@@ -1,24 +1,27 @@
-public enum RuleType
+namespace AdelicSystem.RuleAI
 {
-    unknown,
-    unit
-}
+    public enum RuleType
+    {
+        unknown,
+        unit
+    }
 
-public enum StatementType
-{
-    unknown,
-    Gate,
-    Inequality,
-    Generator,
-    Mutator,
-    Evaluation
-}
+    public enum StatementType
+    {
+        unknown,
+        Gate,
+        Inequality,
+        Generator,
+        Mutator,
+        Evaluation
+    }
 
-public enum ActionType
-{
-    unknown,
-    Movement,
-    Targeting,
-    Combat,
-    Utils
+    public enum ActionType
+    {
+        unknown,
+        Movement,
+        Targeting,
+        Combat,
+        Utils
+    }
 }

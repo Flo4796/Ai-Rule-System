@@ -1,121 +1,122 @@
-using System.Collections;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using System.Reflection;
-
-/// <summary>
-/// Asset collecter utility for RuleSystem editors.
-/// </summary>
-public static class RuleSystemUtil
+namespace AdelicSystem.RuleAI.Editor
 {
     /// <summary>
-    /// Captures all objects with a <see cref="RuleController"/> and serializeses them.
+    /// Asset collecter utility for RuleSystem editors.
     /// </summary>
-    /// <returns>Serialized captured controller array</returns>
-    public static SerializedObject[] CollectRuleSytemObjects()
+    public static class RuleSystemUtil
     {
-        List<SerializedObject> collectedRules = new List<SerializedObject>();
-
-        foreach (RuleController controller in Resources.FindObjectsOfTypeAll<RuleController>())
+        /// <summary>
+        /// Captures all objects with a <see cref="RuleController"/> and serializeses them.
+        /// </summary>
+        /// <returns>Serialized captured controller array</returns>
+        public static SerializedObject[] CollectRuleSytemObjects()
         {
-            collectedRules.Add(new SerializedObject(controller));
-        }
-        return collectedRules.ToArray();
-    }
+            List<SerializedObject> collectedRules = new List<SerializedObject>();
 
-    /// <summary>
-    /// Captures all <see cref="Statement"/> (core of <see cref="Decision"/> logic). Arranges them by type of statments.
-    /// </summary>
-    /// <returns><see cref=" Dictionary{TKey, TValue}"/> sorted statements.</returns>
-    public static Dictionary<StatementType, List<Statement>> CollectDecisionsByType()
-    {
-        Dictionary<StatementType, List<Statement>> collectedDecisions = new Dictionary<StatementType, List<Statement>>();
-        string[] guids = AssetDatabase.FindAssets("t:Statement");
-        List<Statement> rawCollectedDecisions = new List<Statement>();
-        foreach (string guid in guids)
-        {
-            rawCollectedDecisions.Add(AssetDatabase.LoadAssetAtPath<Statement>(AssetDatabase.GUIDToAssetPath(guid)));
-        }
-        
-        
-        if(rawCollectedDecisions == null || rawCollectedDecisions.Count == 0) { throw new Exception("Error no Statements collected!"); }
-
-        foreach (Statement statement in rawCollectedDecisions)
-        {
-            if(collectedDecisions.ContainsKey(statement.Type))
+            foreach (RuleController controller in Resources.FindObjectsOfTypeAll<RuleController>())
             {
-                collectedDecisions[statement.Type].Add(statement);
+                collectedRules.Add(new SerializedObject(controller));
             }
-            else
-            {
-                collectedDecisions.Add(statement.Type, new List<Statement> { statement });
-            }
+            return collectedRules.ToArray();
         }
-        return collectedDecisions;
-    }
 
-    /// <summary>
-    /// Captures all <see cref="Action"/> assets within project Resources folder. Sorted by set type.
-    /// </summary>
-    /// <returns><see cref=" Dictionary{TKey, TValue}"/> sorted Actions.</returns>
-    public static Dictionary<ActionType, List<Action>> CollectActionsByType()
-    {
-        Dictionary<ActionType, List<Action>> collectedActions = new Dictionary<ActionType, List<Action>>();
-
-        List<Action> capturedActions = new List<Action>();
-        string[] GUIDs = AssetDatabase.FindAssets("t:Action");
-        foreach (string GUID in GUIDs)
+        /// <summary>
+        /// Captures all <see cref="Statement"/> (core of <see cref="Decision"/> logic). Arranges them by type of statments.
+        /// </summary>
+        /// <returns><see cref=" Dictionary{TKey, TValue}"/> sorted statements.</returns>
+        public static Dictionary<StatementType, List<Statement>> CollectDecisionsByType()
         {
-            capturedActions.Add(AssetDatabase.LoadAssetAtPath<Action>(AssetDatabase.GUIDToAssetPath(GUID)));
+            Dictionary<StatementType, List<Statement>> collectedDecisions = new Dictionary<StatementType, List<Statement>>();
+            string[] guids = AssetDatabase.FindAssets("t:Statement");
+            List<Statement> rawCollectedDecisions = new List<Statement>();
+            foreach (string guid in guids)
+            {
+                rawCollectedDecisions.Add(AssetDatabase.LoadAssetAtPath<Statement>(AssetDatabase.GUIDToAssetPath(guid)));
+            }
+
+
+            if (rawCollectedDecisions == null || rawCollectedDecisions.Count == 0) { throw new Exception("Error no Statements collected!"); }
+
+            foreach (Statement statement in rawCollectedDecisions)
+            {
+                if (collectedDecisions.ContainsKey(statement.Type))
+                {
+                    collectedDecisions[statement.Type].Add(statement);
+                }
+                else
+                {
+                    collectedDecisions.Add(statement.Type, new List<Statement> { statement });
+                }
+            }
+            return collectedDecisions;
         }
 
-        foreach (Action action in capturedActions)
+        /// <summary>
+        /// Captures all <see cref="Action"/> assets within project Resources folder. Sorted by set type.
+        /// </summary>
+        /// <returns><see cref=" Dictionary{TKey, TValue}"/> sorted Actions.</returns>
+        public static Dictionary<ActionType, List<Action>> CollectActionsByType()
         {
-            if(!collectedActions.ContainsKey(action.Type))
+            Dictionary<ActionType, List<Action>> collectedActions = new Dictionary<ActionType, List<Action>>();
+
+            List<Action> capturedActions = new List<Action>();
+            string[] GUIDs = AssetDatabase.FindAssets("t:Action");
+            foreach (string GUID in GUIDs)
             {
-                collectedActions.Add(action.Type, new List<Action> { action });
+                capturedActions.Add(AssetDatabase.LoadAssetAtPath<Action>(AssetDatabase.GUIDToAssetPath(GUID)));
             }
-            else
+
+            foreach (Action action in capturedActions)
             {
-                collectedActions[action.Type].Add(action);
+                if (!collectedActions.ContainsKey(action.Type))
+                {
+                    collectedActions.Add(action.Type, new List<Action> { action });
+                }
+                else
+                {
+                    collectedActions[action.Type].Add(action);
+                }
             }
+            return collectedActions;
         }
-        return collectedActions;
+
+        /// <summary>
+        /// Unwraps <see cref="Rule"/> from its Serialized counterpart.
+        /// </summary>
+        /// <param name="ruleProperty">Serialized version of rule.</param>
+        /// <param name="parentRuleSet">String name representing set containing this Rule.</param>
+        /// <param name="ruleIndex">Zero-based index of rule in ruleset array. </param>
+        /// <returns></returns>
+        public static Rule DeserializeRule(SerializedProperty ruleProperty, string parentRuleSet, int ruleIndex)
+        {
+            FieldInfo profileInfo = ruleProperty.serializedObject.targetObject.GetType().GetField("Profile");
+            var profile = profileInfo.GetValue(ruleProperty.serializedObject.targetObject);
+            FieldInfo setInfo = profile.GetType().GetField(parentRuleSet);
+            Rule[] set = (Rule[])setInfo.GetValue(profile);
+            return set[ruleIndex];
+        }
+
+        /// <summary>
+        /// Updates Serialized property counterpart of <see cref="Rule"/>.
+        /// </summary>
+        /// <param name="rule">Updated <see cref="Rule"/> version. </param>
+        /// <param name="ruleProperty">Rule serialized counterpart.</param>
+        /// <param name="parentRuleSet">String name representing set containing this Rule.</param>
+        /// <param name="ruleIndex">Zero-based index of rule in ruleset array. </param>
+        public static void SerializeRule(Rule rule, SerializedProperty ruleProperty, string parentRuleSet, int ruleIndex)
+        {
+            FieldInfo profileInfo = ruleProperty.serializedObject.targetObject.GetType().GetField("Profile");
+            var profile = profileInfo.GetValue(ruleProperty.serializedObject.targetObject);
+            FieldInfo setInfo = profile.GetType().GetField(parentRuleSet);
+            Rule[] set = (Rule[])setInfo.GetValue(profile);
+            set[ruleIndex] = rule;
+
+        }
+
     }
-
-    /// <summary>
-    /// Unwraps <see cref="Rule"/> from its Serialized counterpart.
-    /// </summary>
-    /// <param name="ruleProperty">Serialized version of rule.</param>
-    /// <param name="parentRuleSet">String name representing set containing this Rule.</param>
-    /// <param name="ruleIndex">Zero-based index of rule in ruleset array. </param>
-    /// <returns></returns>
-    public static Rule DeserializeRule(SerializedProperty ruleProperty, string parentRuleSet, int ruleIndex)
-    {
-        FieldInfo profileInfo = ruleProperty.serializedObject.targetObject.GetType().GetField("Profile");
-        var profile = profileInfo.GetValue(ruleProperty.serializedObject.targetObject);
-        FieldInfo setInfo = profile.GetType().GetField(parentRuleSet);
-        Rule[] set = (Rule[])setInfo.GetValue(profile);
-        return set[ruleIndex];
-    }
-
-    /// <summary>
-    /// Updates Serialized property counterpart of <see cref="Rule"/>.
-    /// </summary>
-    /// <param name="rule">Updated <see cref="Rule"/> version. </param>
-    /// <param name="ruleProperty">Rule serialized counterpart.</param>
-    /// <param name="parentRuleSet">String name representing set containing this Rule.</param>
-    /// <param name="ruleIndex">Zero-based index of rule in ruleset array. </param>
-    public static void SerializeRule(Rule rule, SerializedProperty ruleProperty, string parentRuleSet, int ruleIndex)
-    {
-        FieldInfo profileInfo = ruleProperty.serializedObject.targetObject.GetType().GetField("Profile");
-        var profile = profileInfo.GetValue(ruleProperty.serializedObject.targetObject);
-        FieldInfo setInfo = profile.GetType().GetField(parentRuleSet);
-        Rule[] set = (Rule[])setInfo.GetValue(profile);
-        set[ruleIndex] = rule;
-
-    }
-
 }

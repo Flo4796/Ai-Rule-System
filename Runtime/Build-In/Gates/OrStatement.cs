@@ -1,19 +1,24 @@
 using UnityEngine;
-/// <summary>
-/// Build-In <see cref="Statement"/>. Type = OR-Gate boolian logic.
-/// </summary>
 
-[CreateAssetMenu(menuName = "RuleSystem/Build-In/Gate/Or")]
-public class OrStatement : Statement
+namespace AdelicSystem.RuleAI
 {
-    public override float Evaluate(RuleController controller, Rule rule, Decision decision)
+    /// <summary>
+    /// Build-In <see cref="Statement"/>. Type = OR-Gate boolian logic.
+    /// </summary>
+
+    [CreateAssetMenu(menuName = "RuleSystem/Build-In/Gate/Or")]
+    public class OrStatement : Statement
     {
-        foreach (int input in decision.inputID)
+        public override float Evaluate(RuleController controller, Rule rule, Decision decision)
         {
-            if(rule.GetDecisionByIdentifier(input).Make(controller, rule) == 1)
+            foreach (int input in decision.inputID)
             {
-                return 1f;
+                if (rule.GetDecisionByIdentifier(input).Make(controller, rule) == 1)
+                {
+                    return 1f;
+                }
             }
-        }return 0f;
+            return 0f;
+        }
     }
 }

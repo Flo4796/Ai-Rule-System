@@ -2,30 +2,33 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum TypeFilter
+namespace AdelicSystem.RuleAI
 {
-    Unknown,
-    Unit
-}
+    public enum TypeFilter
+    {
+        Unknown,
+        Unit
+    }
 
-public enum EditorFilter
-{
-    Melee,
-    Range
-}
+    public enum EditorFilter
+    {
+        Melee,
+        Range
+    }
 
-[System.Serializable]
-public class EditorFilters
-{
-    public TypeFilter Type = TypeFilter.Unknown;
-    public List<Filter> Filters = new List<Filter>();
-    public string Search = string.Empty;
-}
+    [System.Serializable]
+    public class EditorFilters
+    {
+        public TypeFilter Type = TypeFilter.Unknown;
+        public List<Filter> Filters = new List<Filter>();
+        public string Search = string.Empty;
+    }
 
-[System.Serializable]
-public class Filter
-{
-    public string Name;
-    public Color Color;
+    [System.Serializable]
+    public class Filter
+    {
+        public string Name;
+        public Color Color;
+    }
 }
 #endif

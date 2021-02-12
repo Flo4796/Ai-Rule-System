@@ -1,6 +1,6 @@
 {
     "name": "com.ai-rule-system.Editor",
-    "rootNamespace": "",
+    "rootNamespace": "AdelicSystem.RuleAI.Editor",
     "references": [
         "GUID:1181cb6c0c5cc954eba8a0fa110e0e76"
     ],

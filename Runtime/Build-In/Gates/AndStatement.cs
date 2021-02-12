@@ -1,19 +1,24 @@
 using UnityEngine;
 
-/// <summary>
-/// Build-In <see cref="Statement"/>. Type = AND-Gate boolian logic.
-/// </summary>
-[CreateAssetMenu(menuName = "RuleSystem/Build-In/Gate/And")]
-public class AndStatement : Statement
+
+namespace AdelicSystem.RuleAI
 {
-    public override float Evaluate(RuleController controller, Rule rule, Decision decision)
+    /// <summary>
+    /// Build-In <see cref="Statement"/>. Type = AND-Gate boolian logic.
+    /// </summary>
+    [CreateAssetMenu(menuName = "RuleSystem/Build-In/Gate/And")]
+    public class AndStatement : Statement
     {
-        foreach (int input in decision.inputID)
+        public override float Evaluate(RuleController controller, Rule rule, Decision decision)
         {
-            if(rule.GetDecisionByIdentifier(input).Make(controller,rule) == 0)
+            foreach (int input in decision.inputID)
             {
-                return 0;
+                if (rule.GetDecisionByIdentifier(input).Make(controller, rule) == 0)
+                {
+                    return 0;
+                }
             }
-        }return 1;
+            return 1;
+        }
     }
 }

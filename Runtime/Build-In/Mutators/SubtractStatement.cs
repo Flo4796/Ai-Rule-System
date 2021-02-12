@@ -1,26 +1,29 @@
 using UnityEngine;
 
-/// <summary>
-/// Build-In <see cref="Statement"/>. Type represents a math subtraction of the inputs.
-/// </summary>
-[CreateAssetMenu(menuName = "RuleSystem/Build-In/Mutator/Subtract")]
-public class SubtractStatement : Statement
+namespace AdelicSystem.RuleAI
 {
-    public override float Evaluate(RuleController controller, Rule rule, Decision decision)
+    /// <summary>
+    /// Build-In <see cref="Statement"/>. Type represents a math subtraction of the inputs.
+    /// </summary>
+    [CreateAssetMenu(menuName = "RuleSystem/Build-In/Mutator/Subtract")]
+    public class SubtractStatement : Statement
     {
-        float total = 0f;
-
-        foreach (int input in decision.inputID)
+        public override float Evaluate(RuleController controller, Rule rule, Decision decision)
         {
-            if(total == 0)
+            float total = 0f;
+
+            foreach (int input in decision.inputID)
             {
-                total = rule.GetDecisionByIdentifier(input).Make(controller, rule);
+                if (total == 0)
+                {
+                    total = rule.GetDecisionByIdentifier(input).Make(controller, rule);
+                }
+                else
+                {
+                    total -= rule.GetDecisionByIdentifier(input).Make(controller, rule);
+                }
             }
-            else
-            {
-                total -= rule.GetDecisionByIdentifier(input).Make(controller, rule);
-            }
+            return total;
         }
-        return total;
     }
 }

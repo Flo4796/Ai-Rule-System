@@ -1,47 +1,49 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-[System.Serializable]
-public class RuleEditorSettings
+namespace AdelicSystem.RuleAI.Editor
 {
-    private static RuleEditorSettings instance;
-    public static RuleEditorSettings Instance
+
+    [System.Serializable]
+    public class RuleEditorSettings
     {
-        get
-        { 
-            if (instance == null)
+        private static RuleEditorSettings instance;
+        public static RuleEditorSettings Instance
+        {
+            get
             {
-                Load();
+                if (instance == null)
+                {
+                    Load();
+                }
+                return instance;
             }
-            return instance;
         }
-    }
 
-    private static void Load()
-    {
-        string path = Application.dataPath.Replace("Assets", "ProjectSettings\\RuleEditorSettings.json");
-        if(File.Exists(path))
+        private static void Load()
         {
-            string jsonSettings = File.ReadAllText(path);
-            instance = JsonUtility.FromJson<RuleEditorSettings>(jsonSettings);
+            string path = Application.dataPath.Replace("Assets", "ProjectSettings\\RuleEditorSettings.json");
+            if (File.Exists(path))
+            {
+                string jsonSettings = File.ReadAllText(path);
+                instance = JsonUtility.FromJson<RuleEditorSettings>(jsonSettings);
+            }
+            else
+            {
+                instance = new RuleEditorSettings();
+            }
         }
-        else
+
+        public void Save()
         {
-            instance =  new RuleEditorSettings();
+            string path = Application.dataPath.Replace("Assets", "ProjectSettings\\RuleEditorSettings.json");
+            string jsonSettings = JsonUtility.ToJson(instance);
+            File.WriteAllText(path, jsonSettings);
         }
-    }
-    
-    public void Save()
-    {
-        string path = Application.dataPath.Replace("Assets", "ProjectSettings\\RuleEditorSettings.json");
-        string jsonSettings = JsonUtility.ToJson(instance);
-        File.WriteAllText(path, jsonSettings);
-    }
 
-    public Filter[] ProfileFilters = new Filter[0] { };
-    public Filter[] StatementFilters = new Filter[0] { };
-    public Filter[] ActionFilters = new Filter[0] { };
+        public Filter[] ProfileFilters = new Filter[0] { };
+        public Filter[] StatementFilters = new Filter[0] { };
+        public Filter[] ActionFilters = new Filter[0] { };
 
+    }
 }
