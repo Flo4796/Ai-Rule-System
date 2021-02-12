@@ -12,6 +12,9 @@ namespace AdelicSystem.RuleAI
         public Rule[] Set0;
         public Rule[] Set1;
         public Rule[] Set2;
+        public Rule[] Set3;
+        public Rule[] Set4;
+        public Rule[] Set5;
 
 #if UNITY_EDITOR
         public EditorFilters MyFilters;
