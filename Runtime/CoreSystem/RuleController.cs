@@ -75,6 +75,16 @@ namespace AdelicSystem.RuleAI
         }
 
         /// <summary>
+        /// Checks whether param rule is already active in pool.
+        /// </summary>
+        /// <param name="rule">Rule to check</param>
+        /// <returns></returns>
+        public bool IsRuleActive(Rule rule)
+        {
+            return activeRulePool.Contains(rule);
+        }
+
+        /// <summary>
         /// Updates Quality of Active Rules and set highest quality as threshold.
         /// </summary>
         private void RequalifyActivePool()
