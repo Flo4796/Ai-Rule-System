@@ -90,11 +90,14 @@ namespace AdelicSystem.RuleAI
         /// <returns></returns>
         public bool IsRuleActive(Rule rule)
         {
-            foreach (Rule Active in activeRulePool)
+            if (rule != null)
             {
-                if(Active.MyAction == rule.MyAction)
+                foreach (Rule Active in activeRulePool)
                 {
-                    return true;
+                    if (Active.MyAction == rule.MyAction)
+                    {
+                        return true;
+                    }
                 }
             }
             return false;
