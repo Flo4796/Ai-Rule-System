@@ -1,12 +1,26 @@
 # ChangeLog
 
 > Adelic Systems(c) Asset-base AI Rule System and Rule System Editors.
-> All notable system upgrates will be tracked here.
+> All notable system upgrades will be tracked here.
+
+###  **1.0.2**
+
+#### [CHANGED]
+- Visibility on Active Rules and Potential rules, Useful for Debugging.
+- RuleController Active Rule Update is now A separate function, allowing more control.
+
+#### [FIXED]
+- RuleController:
+
+  - Quality relation between Active and Potential Rules.
+
+  
 
 ### **1.0.1**
 #### [ADDED]
 - RuleController:
 	- IsRuleActive public function
+		
 		> RuleControllers are now able to check if a rule is already active.
 
 ### **1.0.0**

@@ -9,11 +9,18 @@ namespace AdelicSystem.RuleAI
 {
     public class RuleController : MonoBehaviour
     {
+        // Information Properties
+        public float HighesActiveQuality { get { return ActiveQuality; } }
+        public string CurrentActiveRule { get { return ActiveRule; } }
+
+        private float ActiveQuality = -1f;
+        private string ActiveRule = "No Active Rule";
+
         public BehaviourProfile Profile;
         List<Rule> potentialNextRule = new List<Rule>();
         List<Rule> activeRulePool = new List<Rule>();
 
-        private void Update()
+        protected void UpdateRuleSystem()
         {
             // Check activeRule list
             if (activeRulePool.Count > 0)
@@ -41,7 +48,7 @@ namespace AdelicSystem.RuleAI
                     activeRulePool.Add(highestPotential);
                     potentialNextRule.Clear();
                 }
-                else if (highestPotential.MyAction.CanInterupt())
+                else if (highestPotential.MyAction.CanInterupt() && highestPotential.Quality > ActiveQuality)
                 {
                     InteruptActivePool();
                     highestPotential.MyAction.OnEnterAction(this);
@@ -57,9 +64,11 @@ namespace AdelicSystem.RuleAI
             }
 
             // Update Active Rules
+            ActiveRule = "No Active Rule";
             foreach (Rule activeRule in activeRulePool)
             {
                 activeRule.MyAction.Execute(this);
+                ActiveRule = activeRule.RuleName;
             }
         }
         /// <summary>
@@ -89,10 +98,14 @@ namespace AdelicSystem.RuleAI
         /// </summary>
         private void RequalifyActivePool()
         {
-
+            ActiveQuality = 0f;
             foreach (Rule activeRule in activeRulePool)
             {
-                activeRule.MakeQualityDecision(this);
+                float Quality = activeRule.MakeQualityDecision(this);
+                if(Quality > ActiveQuality)
+                {
+                    ActiveQuality = Quality;
+                }
             }
         }
 
