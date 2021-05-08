@@ -3,18 +3,25 @@
 > Adelic Systems(c) Asset-base AI Rule System and Rule System Editors.
 > All notable system upgrades will be tracked here.
 
+### **1.0.5**
+
+#### [ADDED]
+- Behavior Profile Services:
+	
+	> Profiles now have their first public service functions. This allows for scripted (and thus Runtime) manipulation of Rulesets.
+- Inspector friendliness
+	- Rule Property Drawer
+	> It is now possible to open any Rule (either in a Profile or Individual) in the rule editor window by the press of a button in the Inspector.
+
+
 ###  **1.0.2**
 
 #### [CHANGED]
 - Visibility on Active Rules and Potential rules, Useful for Debugging.
-- RuleController Active Rule Update is now A separate function, allowing more control.
 
 #### [FIXED]
-- RuleController:
-
-  - Quality relation between Active and Potential Rules.
-
-  
+- Rule Controller:
+	-Quality relation between Active and Potential Rules.
 
 ### **1.0.1**
 #### [ADDED]

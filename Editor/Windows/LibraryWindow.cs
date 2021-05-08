@@ -57,7 +57,7 @@ namespace AdelicSystem.RuleAI.Editor
                     selectedRuleObj = potentialOpenedRule;
                     MyData.selectedRule = selectedRuleObj;
                 }
-                selectedRuleObj = LibraryLayoutUtil.DrawPropertyInfoLayout(selectedControllerObj, selectedRuleObj, WindowUtils.PropertyLayout, OnOpenRuleWindowRequest, ref MyData, AdelicSkin);
+                selectedRuleObj = LibraryLayoutUtil.DrawPropertyInfoLayout(selectedControllerObj, selectedRuleObj, WindowUtils.PropertyLayout, RuleWindow2.RequestRuleWindow, ref MyData, AdelicSkin);
             }
             else
             {
@@ -97,14 +97,6 @@ namespace AdelicSystem.RuleAI.Editor
             {
                 controller.ApplyModifiedProperties();
             }
-        }
-
-        private void OnOpenRuleWindowRequest(SerializedProperty rule)
-        {
-            RuleWindow2 window = CreateWindow<RuleWindow2>();
-            window.minSize = WindowUtils.RuleMinWindowSize;
-            window.SubjectRule = rule;
-            window.Initialize();
         }
     }
 }

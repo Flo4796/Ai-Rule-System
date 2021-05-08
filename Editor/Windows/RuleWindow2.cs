@@ -9,6 +9,7 @@ namespace AdelicSystem.RuleAI.Editor
         [SerializeField] GUISkin AdelicSkin;
         [SerializeField] GUISkin NodeSkin;
         bool isInitialized = false;
+        bool isInSet = false;
         SessionData myData;
         public SerializedProperty SubjectRule;
 
@@ -32,7 +33,20 @@ namespace AdelicSystem.RuleAI.Editor
         Vector2 mousePos;
         #endregion
 
-        public void Initialize()
+        public static void RequestRuleWindow(SerializedProperty rule, bool inSet)
+        {
+            RuleWindow2 window = CreateWindow<RuleWindow2>();
+            window.minSize = WindowUtils.RuleMinWindowSize;
+            window.SubjectRule = rule;
+            window.isInSet = inSet;
+            window.Initialize(inSet);
+        }
+        public static void RequestRuleWindow(SerializedProperty rule)
+        {
+            RequestRuleWindow(rule, true);
+        }
+
+        private void Initialize(bool inSet)
         {
             // catching refrences
             myData = new SessionData();
@@ -41,7 +55,7 @@ namespace AdelicSystem.RuleAI.Editor
             // Collect Actions
             capturedActions = RuleSystemUtil.CollectActionsByType();
             // Load Rule
-            LoadRule();
+            LoadRule(inSet);
             LoadThreads();
             isInitialized = true;
         }
@@ -78,7 +92,7 @@ namespace AdelicSystem.RuleAI.Editor
 
 
             // Update Rule
-            SaveRule();
+            SaveRule(isInSet);
 
         }
 
@@ -86,12 +100,19 @@ namespace AdelicSystem.RuleAI.Editor
         /// <summary>
         /// Load function that unpacks <see cref="Rule"/> from corresponding <see cref="SerializedProperty"/>.
         /// </summary>
-        private void LoadRule()
+        private void LoadRule(bool inSet)
         {
-            string setName = SubjectRule.propertyPath.Remove(SubjectRule.propertyPath.IndexOf(".Array")).Replace("Profile.", "");
-            int ruleIndex = int.Parse(SubjectRule.propertyPath.Substring(SubjectRule.propertyPath.IndexOf("[") + 1).Replace("]", ""));
+            if (inSet)
+            {
+                string setName = SubjectRule.propertyPath.Remove(SubjectRule.propertyPath.IndexOf(".Array")).Replace("Profile.", "");
+                int ruleIndex = int.Parse(SubjectRule.propertyPath.Substring(SubjectRule.propertyPath.IndexOf("[") + 1).Replace("]", ""));
 
-            deserializedRule = RuleSystemUtil.DeserializeRule(SubjectRule, setName, ruleIndex);
+                deserializedRule = RuleSystemUtil.DeserializeRule(SubjectRule, setName, ruleIndex);
+            }
+            else
+            {
+                deserializedRule = RuleSystemUtil.DeserializeRule(SubjectRule);
+            }
             rootNode = RuleCreator.CreateRoot(deserializedRule.RootGridPosition, OnNodePortContact, OnUpdateRootRequest, OnRemoveAThread, deserializedRule.MandatoryId, deserializedRule.QualityId, deserializedRule.MyAction, NodeSkin);
             if (deserializedRule.MyAction != null)
             {
@@ -154,17 +175,21 @@ namespace AdelicSystem.RuleAI.Editor
         /// <summary>
         /// Save function that repacks Rule into <see cref=" SerializedProperty"/> and updates Obj.
         /// </summary>
-        private void SaveRule()
+        private void SaveRule(bool inSet)
         {
-            string setName = SubjectRule.propertyPath.Remove(SubjectRule.propertyPath.IndexOf(".Array")).Replace("Profile.", "");
-            int ruleIndex = int.Parse(SubjectRule.propertyPath.Substring(SubjectRule.propertyPath.IndexOf("[") + 1).Replace("]", ""));
             deserializedRule.MandatoryId = rootNode.MandatoryID;
             deserializedRule.QualityId = rootNode.QualityID;
             deserializedRule.RootGridPosition = rootNode.Rect.position;
             deserializedRule.MyDecisions = ruleDecisions.ToArray();
             deserializedRule.MyAction = rootNode.Action;
             if (actionNode != null) deserializedRule.ActionGridPosition = actionNode.Rect.position;
-            RuleSystemUtil.SerializeRule(deserializedRule, SubjectRule, setName, ruleIndex);
+            if (inSet)
+            {
+                string setName = SubjectRule.propertyPath.Remove(SubjectRule.propertyPath.IndexOf(".Array")).Replace("Profile.", "");
+                int ruleIndex = int.Parse(SubjectRule.propertyPath.Substring(SubjectRule.propertyPath.IndexOf("[") + 1).Replace("]", ""));
+                RuleSystemUtil.SerializeRule(deserializedRule, SubjectRule, setName, ruleIndex);
+            }
+
             SubjectRule.serializedObject.ApplyModifiedProperties();
         }
 

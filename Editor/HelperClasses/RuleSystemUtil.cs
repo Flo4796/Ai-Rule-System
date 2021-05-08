@@ -101,6 +101,15 @@ namespace AdelicSystem.RuleAI.Editor
             return set[ruleIndex];
         }
 
+        public static Rule DeserializeRule(SerializedProperty ruleProperty)
+        {
+            FieldInfo ruleInfo = ruleProperty.serializedObject.targetObject.GetType().GetField(ruleProperty.propertyPath);
+            if(ruleInfo != null)
+            {
+                return (Rule)ruleInfo.GetValue(ruleProperty.serializedObject.targetObject);
+            }return null;
+        }
+
         /// <summary>
         /// Updates Serialized property counterpart of <see cref="Rule"/>.
         /// </summary>
