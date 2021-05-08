@@ -2,7 +2,7 @@
     "name": "com.ai-rule-system.Editor",
     "rootNamespace": "AdelicSystem.RuleAI.Editor",
     "references": [
-        "GUID:1181cb6c0c5cc954eba8a0fa110e0e76"
+        "GUID:468e08b0f25f3d946b0fbc6045a5cfae"
     ],
     "includePlatforms": [
         "Editor"

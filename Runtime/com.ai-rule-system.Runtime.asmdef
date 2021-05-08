@@ -1,6 +1,6 @@
 {
-    "name": "com.ai-rule-system.Runtime",
-    "rootNamespace": "AdelicSystem.RuleAI",
+    "name": "com.ai-rule-sytem.Runtime",
+    "rootNamespace": "AdelicSystems.RuleAI",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
