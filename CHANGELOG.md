@@ -3,6 +3,21 @@
 > Adelic Systems(c) Asset-base AI Rule System and Rule System Editors.
 > All notable system upgrades will be tracked here.
 
+### **1.0.6**
+
+#### [ADDED]
+- Composite Action Elements.
+	> Rule System now provides Composite Action Services. It is possible to sequence or Compound multiple actions (or other Composites) in larger/Complex Actions.
+
+#### [CHANGED]
+- RuleController Services
+	> Provided some tracking services to accompany Action Composites.
+- Liberary Window Visual Feedback
+	- Small visual fb change regarding distinction between  Prefabs and Instances in Library.
+
+#### [FIXED]
+- Mutators are now seen as decisions.
+
 ### **1.0.5**
 
 #### [ADDED]

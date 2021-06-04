@@ -171,7 +171,8 @@ namespace AdelicSystem.RuleAI.Editor
                         nodeSkin = skin,
                         OnClickPort = OnPortClick,
                         OnRemoveThread = OnRemoveThread,
-                        rect = new Rect(0, 0, skin.button.fixedWidth, skin.button.fixedHeight)
+                        rect = new Rect(0, 0, skin.button.fixedWidth, skin.button.fixedHeight),
+                        isDecision = true
                     };
                     break;
                 case StatementType.Evaluation:

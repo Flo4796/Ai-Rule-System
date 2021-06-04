@@ -1,3 +1,4 @@
+using AdelicSystems.RuleAI;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,6 +16,7 @@ namespace AdelicSystem.RuleAI
 
         private float ActiveQuality = -1f;
         private string ActiveRule = "No Active Rule";
+        Dictionary<SequenceAction, int> SequenceTracker = new Dictionary<SequenceAction, int>();
 
         public BehaviourProfile Profile;
         List<Rule> potentialNextRule = new List<Rule>();
@@ -102,6 +104,49 @@ namespace AdelicSystem.RuleAI
             }
             return false;
         }
+
+        /// <summary>
+        /// Subscribes a Starting Sequence composite to Rule Controller. Allowing Sequence position tracking.
+        /// </summary>
+        /// <param name="sequence"></param>
+        public void SubscribeSequence(SequenceAction sequence)
+        {
+            if (!SequenceTracker.ContainsKey(sequence))
+                SequenceTracker.Add(sequence, 0);
+        }
+
+        /// <summary>
+        /// Unsubscribe a Finished Sequence composite from this RuleController.
+        /// </summary>
+        /// <param name="sequence"></param>
+        public void UnsubScribeSequence(SequenceAction sequence)
+        {
+            if (SequenceTracker.ContainsKey(sequence))
+                SequenceTracker.Remove(sequence);
+        }
+
+        /// <summary>
+        /// Returns Index from Sequence
+        /// </summary>
+        /// <param name="sequence"></param>
+        /// <returns></returns>
+        public int GetSequenceIndex(SequenceAction sequence)
+        {
+            if (SequenceTracker.ContainsKey(sequence))
+                return SequenceTracker[sequence];
+            return -1;
+        }
+
+        /// <summary>
+        /// Increments refrecenced sequence index by +1.
+        /// </summary>
+        /// <param name="sequence"></param>
+        public void IncrementSequence(SequenceAction sequence)
+        {
+            if (SequenceTracker.ContainsKey(sequence))
+                SequenceTracker[sequence] += 1;
+        }
+
 
         /// <summary>
         /// Updates Quality of Active Rules and set highest quality as threshold.

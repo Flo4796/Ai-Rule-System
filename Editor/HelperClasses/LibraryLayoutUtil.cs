@@ -61,10 +61,12 @@ namespace AdelicSystem.RuleAI.Editor
                             {
                                 GUI.backgroundColor = Color.green;
                             }
+                            skin.button.normal.textColor = (PrefabUtility.GetPrefabParent(controller.targetObject) == null) ? Color.cyan : Color.white;
                             if (GUILayout.Button(controller.targetObject.name, skin.button, GUILayout.Height(25)))
                             {
                                 return controller;
                             }
+                            skin.button.normal.textColor = Color.white;
                             GUI.backgroundColor = prevBG;
                         }
                     }

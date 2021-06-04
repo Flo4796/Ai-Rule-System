@@ -25,8 +25,6 @@ namespace AdelicSystem.RuleAI.Editor
 
         public void Draw()
         {
-
-
             var prev = GUI.backgroundColor;
             GUI.backgroundColor = Color;
 
